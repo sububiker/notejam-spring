@@ -24,9 +24,15 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=pg8675309
       - POSTGRES_DB=springbootdb
+    volumes_from:
+      - storageData
     restart: unless-stopped
     logging:
       driver: "json-file"
       options:
         max-size: "200m"
         max-file: "3"
+
+  storageData:
+    image: postgres:9.5-alpine
+    entrypoint: /bin/bash
