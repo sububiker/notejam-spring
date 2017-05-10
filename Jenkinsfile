@@ -1,27 +1,14 @@
-pipeline {
-    agent any
-    stages {
-        stage('Build, test and package') {
-            steps {
+timestamps {
+    timeout(time: 20, unit: 'MINUTES') {  
+        node() {
+            stage('Build, test and package') {
+                def version = sh(script: 'git describe --tags', returnStdout: true).trim()
                 sh 'mvn package'
-                sh 'docker build -t andrey9kin/notejam-spring:$(git describe --tags) .'
                 step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-            }
-        }
-        stage('Push to Docker Hub') {
-            when {
-                branch 'master'
-            }
-            steps {
-                echo 'Push to Docker hub'
-            }
-        }
-        stage('Deploy to stage') {
-            when {
-                branch 'master'
-            }
-            steps {
-                echo 'staging'
+                def image = docker.build("andrey9kin/notejam-spring:${version}", '.')
+                docker.withRegistry('https://registry.hub.docker.com', 'andrey9kin') {
+                    image.push(version)
+                }
             }
         }
     }
