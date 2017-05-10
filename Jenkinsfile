@@ -6,7 +6,6 @@ pipeline {
                 sh 'mvn package'
                 step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
             }
-        }
         stage('Package') {
             when {
                 branch 'production'
