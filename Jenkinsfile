@@ -1,18 +1,11 @@
 pipeline {
     agent any
     stages {
-        stage('Build and test') {
+        stage('Build, test and package') {
             steps {
                 sh 'mvn package'
+                sh 'docker build -t andrey9kin/notejam-spring:$(git describe --tags) .'
                 step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-            }
-        }
-        stage('Package') {
-            when {
-                branch 'production'
-            }
-            steps {
-                echo 'Deploying'
             }
         }
         stage('Push to Docker Hub') {
