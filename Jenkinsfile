@@ -6,10 +6,12 @@ pipeline {
                 sh 'mvn package'
                 step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
             }
+        }
         stage('Package') {
             when {
                 branch 'production'
             }
+            steps {
                 echo 'Deploying'
             }
         }
@@ -17,6 +19,7 @@ pipeline {
             when {
                 branch 'master'
             }
+            steps {
                 echo 'Push to Docker hub'
             }
         }
@@ -24,6 +27,7 @@ pipeline {
             when {
                 branch 'master'
             }
+            steps {
                 echo 'staging'
             }
         }
