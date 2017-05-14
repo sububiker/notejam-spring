@@ -19,8 +19,34 @@ timestamps {
                 }
             }
             stage('Deploy to staging') {
-                echo 'Deploy!'
+                dir('/k8s') {
+                    sh '. ./setup_kubectl.sh'
+                }
+                if (!isDeployed('stage')) {
+                    initialDeploy('stage')
+                }
+                sh "kubectl --namespace=stage set image deployment/frontend springboot-app=andrey9kin/notejam-spring:${version}"
             }
         }
     }
+}
+
+def isDeployed(def env) {
+    echo 'Check if deployments already created'
+    sh "kubectl --namespace=${env} get deployments 2> deployments"
+    def deployments = readFile('deployments').trim()
+    echo "Deployments: ${deployments}"
+    if (deployments.equalsIgnoreCase('No resources found.')) {
+        return False
+    }
+    return True
+}
+
+def initialDeploy(def env) {
+    echo 'Create deployments and services'
+    sh "kubectl --namespace=${env} create -f ./k8s/secrets.yaml"
+    sh "kubectl --namespace=${env} create -f ./k8s/postgres-deployment.yaml"
+    sh "kubectl --namespace=${env} create -f ./k8s/postgres-service.yaml"
+    sh "kubectl --namespace=${env} create -f ./k8s/frontend-deployment.yaml"
+    sh "kubectl --namespace=${env} create -f ./k8s/frontend-service.yaml"
 }
