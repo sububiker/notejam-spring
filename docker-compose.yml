@@ -9,6 +9,12 @@ services:
         - https_proxy
         - no_proxy
         - JAVA_OPTS
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_SERVICE_HOST
+      - POSTGRES_PORT
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -16,14 +22,14 @@ services:
         max-size: "200m"
         max-file: "3"
     ports:
-      - "8080:8080"
+      - "80:8080"
 
   storage:
     image: postgres:9.5-alpine
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=pg8675309
-      - POSTGRES_DB=springbootdb
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
     volumes_from:
       - storageData
     restart: unless-stopped
