@@ -37,9 +37,9 @@ def isDeployed(def env) {
     def deployments = readFile('deployments').trim()
     echo "Deployments: ${deployments}"
     if (deployments.equalsIgnoreCase('No resources found.')) {
-        return False
+        return false
     }
-    return True
+    return true
 }
 
 def initialDeploy(def env) {
