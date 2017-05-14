@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+        tier: backend
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:9.5-alpine
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: POSTGRES_DB
+          value: springbootdb
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: password
+        ports:
+        - containerPort: 5432

@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: notejam
+        tier: frontend
+    spec:
+      containers:
+      - name: springboot-app
+        image: andrey9kin/notejam-spring:0.0.1-4-gf945b56
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+        env:
+        - name: GET_HOSTS_FROM
+          value: env
+        - name: POSTGRES_DB
+          value: springbootdb
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: password
+        ports:
+        - containerPort: 8080
