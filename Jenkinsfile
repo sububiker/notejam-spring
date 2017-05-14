@@ -44,8 +44,8 @@ def deployTo(def stageName, def imageNameVersion) {
     dir('/k8s') {
         sh '. ./setup_kubectl.sh'
     }
-    if (!isDeployed(${stageName})) {
-        initialDeploy(${stageName})
+    if (!isDeployed(stageName)) {
+        initialDeploy(stageName)
     }
     sh "kubectl --namespace=${stageName} set image deployment/frontend springboot-app=${imageNameVersion}"
 }
