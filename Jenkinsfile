@@ -18,17 +18,36 @@ timestamps {
                     image.push(version)
                 }
             }
-            stage('Deploy to staging') {
-                dir('/k8s') {
-                    sh '. ./setup_kubectl.sh'
-                }
-                if (!isDeployed('stage')) {
-                    initialDeploy('stage')
-                }
-                sh "kubectl --namespace=stage set image deployment/frontend springboot-app=andrey9kin/notejam-spring:${version}"
+            stage('Deploy to test') {
+                deployTo('test', "andrey9kin/notejam-spring:${version}")
+                echo "Do some tests"
+            }
+            stage('Deploy to stage') {
+                deployTo('stage', "andrey9kin/notejam-spring:${version}")
+                echo "Do some more tests"
+            }
+            def userInput = input(
+                id: 'Proceed1', message: 'Deploy to prod?', parameters: [
+                [$class: 'BooleanParameterDefinition', defaultValue: false, description: '', name: 'yes'],
+                [$class: 'BooleanParameterDefinition', defaultValue: false, description: '', name: 'no']])
+            if (userInput['no']) {
+                return
+            }
+            stage('Deploy to prod') {
+                deployTo('prod', "andrey9kin/notejam-spring:${version}")
             }
         }
     }
+}
+
+def deployTo(def stageName, def imageNameVersion) {
+    dir('/k8s') {
+        sh '. ./setup_kubectl.sh'
+    }
+    if (!isDeployed(${stageName})) {
+        initialDeploy(${stageName})
+    }
+    sh "kubectl --namespace=${stageName} set image deployment/frontend springboot-app=${imageNameVersion}"
 }
 
 def isDeployed(def env) {
