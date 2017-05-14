@@ -4,6 +4,9 @@ def image = null
 timestamps {
     timeout(time: 20, unit: 'MINUTES') {  
         node() {
+            stage('Checkout') {
+                checkout scm
+            }
             stage('Build, test and package') {
                 version = sh(script: 'git describe --tags', returnStdout: true).trim()
                 sh 'mvn package'
