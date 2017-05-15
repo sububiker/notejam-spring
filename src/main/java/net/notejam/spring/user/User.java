@@ -2,6 +2,7 @@ package net.notejam.spring.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @see <a href="bitcoin:1335STSwu9hST4vcMRppEPgENMHD2r1REK">Donations</a>
  */
 @Entity
+@Table(name="Users")
 public class User extends AbstractPersistable<Integer> {
 
     private static final long serialVersionUID = -7874055769861590146L;
