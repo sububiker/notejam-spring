@@ -1,14 +1,16 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  replicas: 2
   template:
     metadata:
       labels:
-        app: notejam
-        tier: frontend
+        app: frontend
     spec:
       containers:
       - name: springboot-app
